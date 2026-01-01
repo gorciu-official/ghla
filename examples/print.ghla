@@ -1,0 +1,21 @@
+program print
+bits 64
+
+section .data
+    msg db "Hello from GHLA!", 10
+    msg_len equ $ - msg
+
+section .text
+
+_start:
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg
+    mov rdx, msg_len
+    syscall
+
+    mov rax, 60
+    xor rdi, rdi
+    syscall
+
+export _start

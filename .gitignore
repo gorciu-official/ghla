@@ -1,0 +1,4 @@
+examples/*.asm
+examples/*.o
+examples/*.elf
+ghla.bin
