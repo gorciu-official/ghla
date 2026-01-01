@@ -1,5 +1,8 @@
 program print
+
 bits 64
+
+feature enable shorten_syscalls
 
 section .data
     msg db "Hello from GHLA!", 10
@@ -8,11 +11,7 @@ section .data
 section .text
 
 _start:
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, msg
-    mov rdx, msg_len
-    syscall
+    syscall 1, 1, msg, msg_len
 
     mov rax, 60
     xor rdi, rdi

@@ -1,19 +1,19 @@
 all:
-	g++ ghla.cpp -o ghla.bin
+	@g++ ghla.cpp -o ghla.bin
 
 example_minimal: all
-	./ghla.bin examples/minimal.ghla
+	@./ghla.bin examples/minimal.ghla
 
 test_example_minimal: example_minimal
-	chmod +x ./examples/minimal.elf
-	./examples/minimal.elf
+	@chmod +x ./examples/minimal.elf
+	@./examples/minimal.elf
 
 example_print: all
-	./ghla.bin examples/print.ghla
+	@./ghla.bin examples/print.ghla
 
 test_print_minimal: example_print
-	chmod +x ./examples/print.elf
-	./examples/print.elf
+	@chmod +x ./examples/print.elf
+	@./examples/print.elf
 
 clean:
 	rm -rf examples/*.asm

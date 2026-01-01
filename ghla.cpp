@@ -3,21 +3,65 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
+#include <sstream>
 
 struct GHLAProgram {
     std::string name;
-    int bits;
+    int bits = 64;
+
+    bool shorten_syscalls = false;
 
     std::vector<std::string> imports;
     std::vector<std::string> exports;
 
+    struct Line {
+        enum Type {
+            RAW_ASM,
+            SYSCALL
+        } type;
+
+        std::string text;
+        std::vector<std::string> args;
+    };
+
     struct Section {
         std::string name;
-        std::vector<std::string> code;
+        std::vector<Line> lines;
     };
 
     std::vector<Section> sections;
 };
+
+void emit_syscall(std::ofstream& o,
+                  const GHLAProgram& p,
+                  const GHLAProgram::Line& l) {
+    static const char* regs[] = {
+        "rax",
+        "rdi",
+        "rsi",
+        "rdx",
+        "r10",
+        "r8",
+        "r9"
+    };
+
+    if (!p.shorten_syscalls) {
+        o << "    syscall\n";
+        return;
+    }
+
+    if (l.args.empty())
+        throw std::runtime_error("syscall requires arguments");
+
+    if (l.args.size() > 7)
+        throw std::runtime_error("too many syscall arguments");
+
+    for (size_t i = 0; i < l.args.size(); i++) {
+        o << "    mov " << regs[i] << ", " << l.args[i] << "\n";
+    }
+
+    o << "    syscall\n";
+}
 
 bool starts_with(const std::string& s, const std::string& p) {
     return s.rfind(p, 0) == 0;
@@ -59,6 +103,14 @@ GHLAProgram parse_ghla(const std::string& filename) {
         else if (starts_with(line, "bits ")) {
             prog.bits = std::stoi(trim(line.substr(5)));
         }
+        else if (starts_with(line, "feature enable ")) {
+            std::string feat = trim(line.substr(15));
+            if (feat == "shorten_syscalls") {
+                prog.shorten_syscalls = true;
+            } else {
+                throw std::runtime_error("unknown feature: " + feat);
+            }
+        }
         else if (starts_with(line, "import ")) {
             prog.imports.push_back(trim(line.substr(7)));
         }
@@ -70,10 +122,31 @@ GHLAProgram parse_ghla(const std::string& filename) {
         else if (starts_with(line, "export ")) {
             prog.exports.push_back(trim(line.substr(7)));
         }
+        else if (starts_with(line, "syscall ")) {
+            if (!current)
+                throw std::runtime_error("syscall outside section");
+
+            GHLAProgram::Line l;
+            l.type = GHLAProgram::Line::SYSCALL;
+
+            std::string args = trim(line.substr(8));
+            std::stringstream ss(args);
+            std::string arg;
+
+            while (std::getline(ss, arg, ',')) {
+                l.args.push_back(trim(arg));
+            }
+
+            current->lines.push_back(l);
+        }
         else {
             if (!current)
                 throw std::runtime_error("asm outside section");
-            current->code.push_back(line);
+
+            GHLAProgram::Line l;
+            l.type = GHLAProgram::Line::RAW_ASM;
+            l.text = line;
+            current->lines.push_back(l);
         }
     }
 
@@ -82,6 +155,8 @@ GHLAProgram parse_ghla(const std::string& filename) {
 
 void emit_nasm(const GHLAProgram& p, const std::string& out) {
     std::ofstream o(out);
+    if (!o)
+        throw std::runtime_error("cannot create asm file");
 
     o << "bits " << p.bits << "\n\n";
 
@@ -95,8 +170,16 @@ void emit_nasm(const GHLAProgram& p, const std::string& out) {
 
     for (auto& s : p.sections) {
         o << "section " << s.name << "\n";
-        for (auto& l : s.code)
-            o << "    " << l << "\n";
+
+        for (auto& l : s.lines) {
+            if (l.type == GHLAProgram::Line::RAW_ASM) {
+                o << "    " << l.text << "\n";
+            }
+            else if (l.type == GHLAProgram::Line::SYSCALL) {
+                emit_syscall(o, p, l);
+            }
+        }
+
         o << "\n";
     }
 }
