@@ -7,6 +7,7 @@ struct GHLAProgram {
 
     bool shorten_syscalls = false;
     bool append_str_length = false;
+    bool syscall_constants = false;
 
     std::vector<std::string> imports;
     std::vector<std::string> exports;

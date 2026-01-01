@@ -27,6 +27,8 @@ GHLAProgram parse_ghla(const std::string& filename) {
                 prog.shorten_syscalls = true;
             } else if (feat == "append_str_length") {
                 prog.append_str_length = true;
+            } else if (feat == "syscall_constants") {
+                prog.syscall_constants = true;
             } else {
                 throw std::runtime_error("unknown feature: " + feat);
             }
