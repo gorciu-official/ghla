@@ -3,18 +3,15 @@ program print
 bits 64
 
 feature enable shorten_syscalls
+feature enable append_str_length
 
 section .data
-    msg db "Hello from GHLA!", 10
-    msg_len equ $ - msg
+    msg db "This is GHLA! Welcome!", 10
 
 section .text
 
 _start:
     syscall 1, 1, msg, msg_len
-
-    mov rax, 60
-    xor rdi, rdi
-    syscall
+    syscall 60, 0
 
 export _start

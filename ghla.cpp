@@ -10,6 +10,7 @@ struct GHLAProgram {
     int bits = 64;
 
     bool shorten_syscalls = false;
+    bool append_str_length = false;
 
     std::vector<std::string> imports;
     std::vector<std::string> exports;
@@ -79,6 +80,18 @@ bool ends_with(const std::string& str, const std::string& suffix) {
     return str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
+bool is_string_db(const std::string& line, std::string& label_out) {
+    std::string l = trim(line);
+    size_t db_pos = l.find("db ");
+    if (db_pos == std::string::npos) return false;
+
+    std::string before = trim(l.substr(0, db_pos));
+    if (before.empty()) return false;
+
+    label_out = before;
+    return l.find('"') != std::string::npos;
+}
+
 std::string replace_extension(const std::string& filename, const std::string& new_ext) {
     size_t pos = filename.find_last_of('.');
     if (pos == std::string::npos) return filename + new_ext;
@@ -107,6 +120,8 @@ GHLAProgram parse_ghla(const std::string& filename) {
             std::string feat = trim(line.substr(15));
             if (feat == "shorten_syscalls") {
                 prog.shorten_syscalls = true;
+            } else if (feat == "append_str_length") {
+                prog.append_str_length = true;
             } else {
                 throw std::runtime_error("unknown feature: " + feat);
             }
@@ -174,6 +189,14 @@ void emit_nasm(const GHLAProgram& p, const std::string& out) {
         for (auto& l : s.lines) {
             if (l.type == GHLAProgram::Line::RAW_ASM) {
                 o << "    " << l.text << "\n";
+
+                if (p.append_str_length && s.name == ".data") {
+                    std::string label;
+                    if (is_string_db(l.text, label)) {
+                        o << "    " << label
+                        << "_len equ $ - " << label << "\n";
+                    }
+                }
             }
             else if (l.type == GHLAProgram::Line::SYSCALL) {
                 emit_syscall(o, p, l);
