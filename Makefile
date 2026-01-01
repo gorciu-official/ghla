@@ -1,5 +1,5 @@
 all:
-	@g++ ghla.cpp -o ghla.bin
+	@g++ src/*.cpp -Iinclude -o ghla.bin
 
 example_minimal: all
 	@./ghla.bin examples/minimal.ghla
