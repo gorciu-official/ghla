@@ -1,0 +1,30 @@
+program append_x
+
+bits 64
+
+feature enable shorten_syscalls
+feature enable syscall_constants
+
+section .data
+    filename db "file.txt", 0
+    char db "x"
+
+section .text
+
+_start:
+    ; open("file.txt", O_RDWR | O_CREAT, 0644)
+    syscall SYSCALL_OPEN, filename, 2 | 64, 420
+    mov rdi, rax  
+
+    ; write(fd, "x", 1)
+    mov rsi, char
+    mov rdx, 1
+    syscall SYSCALL_WRITE, rdi, rsi, rdx
+
+    ; close(fd)
+    syscall SYSCALL_CLOSE, rdi
+
+    ; exit(0)
+    syscall SYSCALL_EXIT, 0
+
+export _start
