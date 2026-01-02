@@ -15,6 +15,14 @@ GHLA extends Assembly with these optional features:
 - syscall constants (SYSCALL_WRITE, SYSCALL_OPEN, etc.)
 - new register instructions
 
+## Running
+
+There are a few options to get GHLA binaries:
+
+- [AUR](https://aur.archlinux.org/packages/ghla) if on Arch Linux
+- [GitHub releases](https://github.com/releases/latest)
+- [build the project](#building)
+
 ## Building
 
 This project requires these tools in order to run:
