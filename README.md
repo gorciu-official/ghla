@@ -19,7 +19,7 @@ GHLA extends Assembly with these optional features:
 
 There are a few options to get GHLA binaries:
 
-- [AUR](https://aur.archlinux.org/packages/ghla) if on Arch Linux
+- [AUR](https://aur.archlinux.org/packages/ghla-lang) if on Arch Linux
 - [GitHub releases](https://github.com/releases/latest)
 - [build the project](#building)
 
