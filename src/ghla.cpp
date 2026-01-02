@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
                 std::cerr << "Error: --nasm-f requires an argument\n";
                 return 1;
             }
-            obj_dir = argv[++i];
+            nasm_f = argv[++i];
         }
         else if (arg == "--linker-flags") {
             if (i + 1 >= argc) {
