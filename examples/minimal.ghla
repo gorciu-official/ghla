@@ -1,9 +1,12 @@
 program minimal
 bits 64
 
+feature enable shorten_syscalls
+feature enable syscall_constants
+
 section .text
 
 _start:
-    syscall 60, 0
+    syscall SYSCALL_EXIT, 0
 
 export _start
