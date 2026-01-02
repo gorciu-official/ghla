@@ -67,7 +67,9 @@ int main(int argc, char** argv) {
             std::string input = arg;
 
             if (ends_with(input, ".ghla")) {
-                std::string asm_file = replace_extension(input, ".asm");
+                std::string asm_file = obj_dir.empty() ?
+                                       replace_extension(input, ".asm") :
+                                       replace_directory(replace_extension(input, ".asm"), obj_dir);
                 std::string obj_file = obj_dir.empty() ?
                                        replace_extension(input, ".o") :
                                        replace_directory(replace_extension(input, ".o"), obj_dir);
