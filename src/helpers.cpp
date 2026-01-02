@@ -21,3 +21,14 @@ std::string replace_extension(const std::string& filename, const std::string& ne
     if (pos == std::string::npos) return filename + new_ext;
     return filename.substr(0, pos) + new_ext;
 }
+
+std::string replace_all(std::string s,
+                        const std::string& from,
+                        const std::string& to) {
+    size_t pos = 0;
+    while ((pos = s.find(from, pos)) != std::string::npos) {
+        s.replace(pos, from.length(), to);
+        pos += to.length();
+    }
+    return s;
+}

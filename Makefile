@@ -24,6 +24,13 @@ test_open_minimal: example_open
 	@chmod +x ./examples/open.elf
 	@./examples/open.elf
 
+example_macro: all
+	@./ghla.bin examples/macro.ghla
+
+test_example_macro: example_macro
+	@chmod +x ./examples/macro.elf
+	@./examples/macro.elf
+
 clean:
 	rm -rf examples/*.asm
 	rm -rf examples/*.o

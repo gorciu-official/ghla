@@ -71,37 +71,84 @@ void emit_nasm(const GHLAProgram& p, const std::string& out) {
         o << snippet_syscall_constants;
     }
 
+    auto emit_line = [&](const GHLAProgram::Line& l, auto&& emit_line_ref) -> void {
+        switch (l.type) {
+            case GHLAProgram::Line::RAW_ASM:
+                o << "    " << l.text << "\n";
+
+                if (p.append_str_length && !l.text.empty()) {
+                    std::string label;
+                    if (is_string_db(l.text, label))
+                        o << "    " << label << "_len equ $ - " << label << "\n";
+                }
+                break;
+
+            case GHLAProgram::Line::SYSCALL:
+                emit_syscall(o, p, l);
+                break;
+
+            case GHLAProgram::Line::POP_CREGS:
+                if (!p.new_regs_instructions)
+                    throw std::runtime_error(
+                        "this instruction does not exist without the feature `new_regs_instructions`\n"
+                        "Help: include `feature enable new_regs_instructions` at the beginning of your code"
+                    );
+                o << snippet_pop_cregs;
+                break;
+
+            case GHLAProgram::Line::PUSH_CREGS:
+                if (!p.new_regs_instructions)
+                    throw std::runtime_error(
+                        "this instruction does not exist without the feature `new_regs_instructions`\n"
+                        "Help: include `feature enable new_regs_instructions` at the beginning of your code"
+                    );
+                o << snippet_push_cregs;
+                break;
+
+            case GHLAProgram::Line::MACRO_CALL: {
+                auto it = p.macros.find(l.text);
+                if (it == p.macros.end())
+                    throw std::runtime_error("macro not found: " + l.text);
+
+                const GHLAProgram::Macro& m = it->second;
+
+                if (l.args.size() != m.params.size())
+                    throw std::runtime_error(
+                        "macro argument count mismatch for " + l.text
+                    );
+
+                std::unordered_map<std::string, std::string> map;
+                for (size_t i = 0; i < l.args.size(); i++)
+                    map[m.params[i]] = l.args[i];
+
+                for (auto& body_line : m.body) {
+                    GHLAProgram::Line expanded = body_line;
+
+                    if (expanded.type == GHLAProgram::Line::RAW_ASM) {
+                        for (auto& kv : map)
+                            expanded.text = replace_all(expanded.text, kv.first, kv.second);
+                    } else if (expanded.type == GHLAProgram::Line::SYSCALL) {
+                        for (auto& arg : expanded.args)
+                            for (auto& kv : map)
+                                arg = replace_all(arg, kv.first, kv.second);
+                    }
+
+                    emit_line_ref(expanded, emit_line_ref);
+                }
+
+                break;
+            }
+
+            default:
+                throw std::runtime_error("token type unknown");
+        }
+    };
+
     for (auto& s : p.sections) {
         o << "section " << s.name << "\n";
 
-        for (auto& l : s.lines) {
-            if (l.type == GHLAProgram::Line::RAW_ASM) {
-                o << "    " << l.text << "\n";
-
-                if (p.append_str_length && s.name == ".data") {
-                    std::string label;
-                    if (is_string_db(l.text, label)) {
-                        o << "    " << label
-                        << "_len equ $ - " << label << "\n";
-                    }
-                }
-            }
-            else if (l.type == GHLAProgram::Line::SYSCALL) {
-                emit_syscall(o, p, l);
-            }
-            else if (l.type == GHLAProgram::Line::POP_CREGS) {
-                if (!p.new_regs_instructions) {
-                    throw std::runtime_error("this instruction does not exist without the feature `new_regs_instructions`\nHelp: you probably want to include this line at the beginning of your code: `feature enable new_regs_instructions`");
-                }
-                o << snippet_pop_cregs;
-            }
-            else if (l.type == GHLAProgram::Line::PUSH_CREGS) {
-                if (!p.new_regs_instructions) {
-                    throw std::runtime_error("this instruction does not exist without the feature `new_regs_instructions`\nHelp: you probably want to include this line at the beginning of your code: `feature enable new_regs_instructions`");
-                }
-                o << snippet_push_cregs;
-            }
-        }
+        for (auto& l : s.lines)
+            emit_line(l, emit_line);
 
         o << "\n";
     }

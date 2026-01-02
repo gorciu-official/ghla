@@ -1,6 +1,8 @@
 program minimal
 bits 64
 
+feature enable shorten_syscalls
+
 section .text
 
 _start:

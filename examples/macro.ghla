@@ -1,0 +1,30 @@
+program test_macro
+bits 64
+
+feature enable macros
+feature enable new_regs_instructions
+feature enable append_str_length
+feature enable shorten_syscalls
+feature enable syscall_constants
+
+section .data
+
+msg db "Hello, World!", 0
+
+section .text
+
+macro print_str! what
+    push_cregs 
+    mov rax, SYSCALL_WRITE
+    mov rdi, 1  
+    mov rsi, what
+    mov rdx, what_len   
+    syscall
+    pop_cregs
+endmacro
+
+_start:
+    print_str! msg
+    syscall SYSCALL_EXIT, 0
+
+export _start
