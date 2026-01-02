@@ -29,9 +29,45 @@ GHLAProgram parse_ghla(const std::string& filename) {
                 prog.append_str_length = true;
             } else if (feat == "syscall_constants") {
                 prog.syscall_constants = true;
+            } else if (feat == "new_regs_instructions") {
+                prog.new_regs_instructions = true;
             } else {
                 throw std::runtime_error("unknown feature: " + feat);
             }
+        }
+        else if (starts_with(line, "push_cregs")) {
+            if (!current)
+                throw std::runtime_error("push_cregs outside section");
+
+            GHLAProgram::Line l;
+            l.type = GHLAProgram::Line::PUSH_CREGS;
+
+            std::string args = trim(line.substr(8));
+            std::stringstream ss(args);
+            std::string arg;
+
+            while (std::getline(ss, arg, ',')) {
+                l.args.push_back(trim(arg));
+            }
+
+            current->lines.push_back(l);
+        }
+        else if (starts_with(line, "pop_cregs")) {
+            if (!current)
+                throw std::runtime_error("pop_cregs outside section");
+
+            GHLAProgram::Line l;
+            l.type = GHLAProgram::Line::POP_CREGS;
+
+            std::string args = trim(line.substr(8));
+            std::stringstream ss(args);
+            std::string arg;
+
+            while (std::getline(ss, arg, ',')) {
+                l.args.push_back(trim(arg));
+            }
+
+            current->lines.push_back(l);
         }
         else if (starts_with(line, "import ")) {
             prog.imports.push_back(trim(line.substr(7)));

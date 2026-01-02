@@ -9,6 +9,7 @@ GHLA extends Assembly with these optional features:
 - shorten syscalls
 - append string length
 - syscall constants (SYSCALL_WRITE, SYSCALL_OPEN, etc.)
+- new register instructions
 
 ## ToDo
 

@@ -4,6 +4,7 @@ bits 64
 
 feature enable shorten_syscalls
 feature enable syscall_constants
+feature enable new_regs_instructions
 
 section .data
     filename db "file.txt", 0
@@ -12,6 +13,8 @@ section .data
 section .text
 
 _start:
+    push_cregs
+
     ; open("file.txt", O_RDWR | O_CREAT, 0644)
     syscall SYSCALL_OPEN, filename, 2 | 64, 420
     mov rdi, rax  
@@ -23,6 +26,8 @@ _start:
 
     ; close(fd)
     syscall SYSCALL_CLOSE, rdi
+
+    pop_cregs
 
     ; exit(0)
     syscall SYSCALL_EXIT, 0

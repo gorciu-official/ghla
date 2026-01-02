@@ -89,6 +89,18 @@ void emit_nasm(const GHLAProgram& p, const std::string& out) {
             else if (l.type == GHLAProgram::Line::SYSCALL) {
                 emit_syscall(o, p, l);
             }
+            else if (l.type == GHLAProgram::Line::POP_CREGS) {
+                if (!p.new_regs_instructions) {
+                    throw std::runtime_error("this instruction does not exist without the feature `new_regs_instructions`\nHelp: you probably want to include this line at the beginning of your code: `feature enable new_regs_instructions`");
+                }
+                o << snippet_pop_cregs;
+            }
+            else if (l.type == GHLAProgram::Line::PUSH_CREGS) {
+                if (!p.new_regs_instructions) {
+                    throw std::runtime_error("this instruction does not exist without the feature `new_regs_instructions`\nHelp: you probably want to include this line at the beginning of your code: `feature enable new_regs_instructions`");
+                }
+                o << snippet_push_cregs;
+            }
         }
 
         o << "\n";

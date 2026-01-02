@@ -8,6 +8,7 @@ struct GHLAProgram {
     bool shorten_syscalls = false;
     bool append_str_length = false;
     bool syscall_constants = false;
+    bool new_regs_instructions = false;
 
     std::vector<std::string> imports;
     std::vector<std::string> exports;
@@ -15,7 +16,9 @@ struct GHLAProgram {
     struct Line {
         enum Type {
             RAW_ASM,
-            SYSCALL
+            SYSCALL,
+            POP_CREGS,
+            PUSH_CREGS,
         } type;
 
         std::string text;
