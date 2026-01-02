@@ -21,3 +21,18 @@ std::string replace_extension(const std::string& filename, const std::string& ne
     if (pos == std::string::npos) return filename + new_ext;
     return filename.substr(0, pos) + new_ext;
 }
+
+std::string replace_directory(const std::string& filename, const std::string& new_dir) {
+    size_t pos = filename.find_last_of("/\\");
+    std::string base = (pos == std::string::npos)
+        ? filename
+        : filename.substr(pos + 1);
+
+    if (new_dir.empty())
+        return base;
+
+    if (new_dir.back() == '/' || new_dir.back() == '\\')
+        return new_dir + base;
+
+    return new_dir + "/" + base;
+}

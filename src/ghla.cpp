@@ -13,12 +13,14 @@ int main(int argc, char** argv) {
         std::cerr << "  -o <output>             Set output ELF file name (overrides default)\n";
         std::cerr << "  --transpile-only        Do not link to target executable. Changes behaviour of";
         std::cerr << "                          the -o flag, which now does nothing.";
+        std::cerr << "  --obj-dir               Set the directory where all object files are stored\n";
         std::cerr << "  --linker-flags <flags>  Pass extra flags to the linker\n";
         return 1;
     }
 
     std::vector<std::string> obj_files;
     std::string elf_file;
+    std::string obj_dir;
     std::string linker_flags;
     std::vector<std::string> input_files;
 
@@ -33,6 +35,13 @@ int main(int argc, char** argv) {
                 return 1;
             }
             elf_file = argv[++i];
+        }
+        if (arg == "--obj-dir") {
+            if (i + 1 >= argc) {
+                std::cerr << "Error: --obj-dir requires a directory name\n";
+                return 1;
+            }
+            obj_dir = argv[++i];
         }
         else if (arg == "--transpile-only") {
             transpile_only = true;
@@ -50,7 +59,9 @@ int main(int argc, char** argv) {
 
             if (ends_with(input, ".ghla")) {
                 std::string asm_file = replace_extension(input, ".asm");
-                std::string obj_file = replace_extension(input, ".o");
+                std::string obj_file = obj_dir.empty() ?
+                                       replace_extension(input, ".o") :
+                                       replace_directory(replace_extension(input, ".o"), obj_dir);
 
                 try {
                     GHLAProgram prog = parse_ghla(input);
