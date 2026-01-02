@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
         std::cerr << "                          the -o flag, which now does nothing.";
         std::cerr << "  --obj-dir               Set the directory where all object files are stored\n";
         std::cerr << "  --linker-flags <flags>  Pass extra flags to the linker\n";
+        std::cerr << "  --nasm-f                The -f flag in NASM\n";
         return 1;
     }
 
@@ -22,6 +23,7 @@ int main(int argc, char** argv) {
     std::string elf_file;
     std::string obj_dir;
     std::string linker_flags;
+    std::string nasm_f = "elf64";
     std::vector<std::string> input_files;
 
     bool transpile_only = false;
@@ -36,7 +38,7 @@ int main(int argc, char** argv) {
             }
             elf_file = argv[++i];
         }
-        if (arg == "--obj-dir") {
+        else if (arg == "--obj-dir") {
             if (i + 1 >= argc) {
                 std::cerr << "Error: --obj-dir requires a directory name\n";
                 return 1;
@@ -45,6 +47,13 @@ int main(int argc, char** argv) {
         }
         else if (arg == "--transpile-only") {
             transpile_only = true;
+        }
+        else if (arg == "--nasm-f") {
+            if (i + 1 >= argc) {
+                std::cerr << "Error: --nasm-f requires an argument\n";
+                return 1;
+            }
+            obj_dir = argv[++i];
         }
         else if (arg == "--linker-flags") {
             if (i + 1 >= argc) {
@@ -71,7 +80,7 @@ int main(int argc, char** argv) {
                     return 1;
                 }
 
-                std::string nasm_cmd = "nasm -f elf64 " + asm_file + " -o " + obj_file;
+                std::string nasm_cmd = "nasm -f " + nasm_f + " " + asm_file + " -o " + obj_file;
                 if (std::system(nasm_cmd.c_str()) != 0) {
                     std::cerr << "Error: NASM failed for " << asm_file << "\n";
                     return 1;
