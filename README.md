@@ -1,8 +1,10 @@
 # GHLA
 
+*Assembly. Simplified.*
+
 <div align="center"><img width="522" height="379" alt="image" src="https://github.com/user-attachments/assets/043738d5-d57b-4ee0-9741-ae39f8861e67" /></div>
 
-Assembly. Simplified.
+GHLA is Gorciu's implementation of High Level Assembly (HLA), focused to provide optional features to write cleaner and simpler code in Assembly. GHLA is fully backwards compatibile with Intel syntax of x86/x86_64 Assembly.
 
 ## Features
 
