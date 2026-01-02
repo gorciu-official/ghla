@@ -1,6 +1,6 @@
 # GHLA
 
-<img width="522" height="379" alt="image" src="https://github.com/user-attachments/assets/043738d5-d57b-4ee0-9741-ae39f8861e67" />
+<div align="center"><img width="522" height="379" alt="image" src="https://github.com/user-attachments/assets/043738d5-d57b-4ee0-9741-ae39f8861e67" /></div>
 
 Assembly. Simplified.
 
