@@ -1,4 +1,6 @@
 all:
+	@chmod +x ./make_snippets.sh
+	@./make_snippets.sh
 	@g++ src/*.cpp -Iinclude -o ghla.bin
 
 example_minimal: all
@@ -27,3 +29,5 @@ clean:
 	rm -rf examples/*.o
 	rm -rf examples/*.elf
 	rm -rf ghla.bin
+	rm -rf include/snippets.hpp
+	rm -rf file.txt
