@@ -12,7 +12,7 @@ section .data
 
 section .text
 
-_start:
+export _start:
     push_cregs
 
     ; open("file.txt", O_RDWR | O_CREAT, 0644)
@@ -31,5 +31,3 @@ _start:
 
     ; exit(0)
     syscall SYSCALL_EXIT, 0
-
-export _start

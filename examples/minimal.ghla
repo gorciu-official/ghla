@@ -6,7 +6,6 @@ feature enable syscall_constants
 
 section .text
 
-_start:
+export _start:
     syscall SYSCALL_EXIT, 0
 
-export _start

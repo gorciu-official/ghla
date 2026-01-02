@@ -76,7 +76,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // jeśli użytkownik nie podał -o, ustawiamy nazwę ELF
     if (elf_file.empty()) {
         if (input_files.size() == 1) {
             elf_file = replace_extension(input_files[0], ".elf");

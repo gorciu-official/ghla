@@ -77,6 +77,20 @@ GHLAProgram parse_ghla(const std::string& filename) {
             current = &prog.sections.back();
             current->name = trim(line.substr(8));
         }
+        else if (starts_with(line, "export ") && ends_with(line, ":")) {
+            std::string lbl = trim(line.substr(7));
+            lbl.pop_back(); 
+            prog.exports.push_back(lbl);
+
+            if (!current)
+                throw std::runtime_error("export label outside section");
+
+            GHLAProgram::Line l;
+            l.type = GHLAProgram::Line::RAW_ASM;
+
+            l.text = trim(line.substr(7, line.size() - 1));
+            current->lines.push_back(l);
+        }
         else if (starts_with(line, "export ")) {
             prog.exports.push_back(trim(line.substr(7)));
         }

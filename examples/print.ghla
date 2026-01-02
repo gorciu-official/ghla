@@ -11,8 +11,6 @@ section .data
 
 section .text
 
-_start:
+export _start:
     syscall SYSCALL_WRITE, 1, msg, msg_len
     syscall SYSCALL_EXIT, 0
-
-export _start
