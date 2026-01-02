@@ -1,7 +1,7 @@
-    push rdi
-    push rsi
-    push rdx
-    push rcx
-    push r8
-    push r9
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop r8
+    pop r9
 
