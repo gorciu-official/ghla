@@ -10,8 +10,10 @@ int main(int argc, char** argv) {
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " [options] file1.ghla|.o [file2.ghla|.o ...]\n";
         std::cerr << "Options:\n";
-        std::cerr << "  -o <output>           Set output ELF file name (overrides default)\n";
-        std::cerr << "  --linker-flags <flags> Pass extra flags to the linker\n";
+        std::cerr << "  -o <output>             Set output ELF file name (overrides default)\n";
+        std::cerr << "  --transpile-only        Do not link to target executable. Changes behaviour of";
+        std::cerr << "                          the -o flag, which now does nothing.";
+        std::cerr << "  --linker-flags <flags>  Pass extra flags to the linker\n";
         return 1;
     }
 
@@ -19,6 +21,8 @@ int main(int argc, char** argv) {
     std::string elf_file;
     std::string linker_flags;
     std::vector<std::string> input_files;
+
+    bool transpile_only = false;
 
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
@@ -29,6 +33,9 @@ int main(int argc, char** argv) {
                 return 1;
             }
             elf_file = argv[++i];
+        }
+        else if (arg == "--transpile-only") {
+            transpile_only = true;
         }
         else if (arg == "--linker-flags") {
             if (i + 1 >= argc) {
@@ -76,26 +83,28 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    if (elf_file.empty()) {
-        if (input_files.size() == 1) {
-            elf_file = replace_extension(input_files[0], ".elf");
-        } else {
-            elf_file = "output.elf";
+    if (!transpile_only) {
+        if (elf_file.empty()) {
+            if (input_files.size() == 1) {
+                elf_file = replace_extension(input_files[0], ".elf");
+            } else {
+                elf_file = "output.elf";
+            }
         }
+
+        std::string ld_cmd = "ld";
+        for (auto& o : obj_files)
+            ld_cmd += " " + o;
+        if (!linker_flags.empty())
+            ld_cmd += " " + linker_flags;
+        ld_cmd += " -o " + elf_file;
+
+        if (std::system(ld_cmd.c_str()) != 0) {
+            std::cerr << "Error: linker failed\n";
+            return 1;
+        }
+
+        std::cout << "Build successful: " << elf_file << "\n";
     }
-
-    std::string ld_cmd = "ld";
-    for (auto& o : obj_files)
-        ld_cmd += " " + o;
-    if (!linker_flags.empty())
-        ld_cmd += " " + linker_flags;
-    ld_cmd += " -o " + elf_file;
-
-    if (std::system(ld_cmd.c_str()) != 0) {
-        std::cerr << "Error: linker failed\n";
-        return 1;
-    }
-
-    std::cout << "Build successful: " << elf_file << "\n";
     return 0;
 }
