@@ -14,6 +14,9 @@ GHLA extends Assembly with these optional features:
 - append string length
 - syscall constants (SYSCALL_WRITE, SYSCALL_OPEN, etc.)
 - new register instructions
+- boolean macros (true and false)
+- file descriptors macros (stdout, stdin, stderr)
+- func keyword
 
 ## Running
 

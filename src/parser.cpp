@@ -31,6 +31,10 @@ GHLAProgram parse_ghla(const std::string& filename) {
                 prog.syscall_constants = true;
             } else if (feat == "new_regs_instructions") {
                 prog.new_regs_instructions = true;
+            } else if (feat == "boolean") {
+                prog.enable_boolean = true;
+            } else if (feat == "fd_macros") {
+                prog.enable_fd_macros = true;
             } else {
                 throw std::runtime_error("unknown feature: " + feat);
             }

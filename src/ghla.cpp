@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <cstdlib>
 #include <vector>
 #include <string>
@@ -11,8 +10,8 @@ int main(int argc, char** argv) {
         std::cerr << "Usage: " << argv[0] << " [options] file1.ghla|.o [file2.ghla|.o ...]\n";
         std::cerr << "Options:\n";
         std::cerr << "  -o <output>             Set output ELF file name (overrides default)\n";
-        std::cerr << "  --transpile-only        Do not link to target executable. Changes behaviour of";
-        std::cerr << "                          the -o flag, which now does nothing.";
+        std::cerr << "  --transpile-only        Do not link to target executable. Changes behaviour of\n";
+        std::cerr << "                          the -o flag, which now does nothing.\n";
         std::cerr << "  --obj-dir               Set the directory where all object files are stored\n";
         std::cerr << "  --linker-flags <flags>  Pass extra flags to the linker\n";
         std::cerr << "  --nasm-f                The -f flag in NASM\n";

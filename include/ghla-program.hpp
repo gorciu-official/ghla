@@ -9,6 +9,8 @@ struct GHLAProgram {
     bool append_str_length = false;
     bool syscall_constants = false;
     bool new_regs_instructions = false;
+    bool enable_boolean = false;
+    bool enable_fd_macros = false;
 
     std::vector<std::string> imports;
     std::vector<std::string> exports;

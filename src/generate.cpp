@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-#include <sstream>
 #include "ghla-program.hpp"
 #include "helpers.hpp"
 #include "snippets.hpp"
@@ -69,6 +68,14 @@ void emit_nasm(const GHLAProgram& p, const std::string& out) {
 
     if (p.syscall_constants) {
         o << snippet_syscall_constants;
+    }
+
+    if (p.enable_boolean) {
+        o << snippet_boolean;
+    }
+
+    if (p.enable_fd_macros) {
+        o << snippet_fd_macros;
     }
 
     for (auto& s : p.sections) {

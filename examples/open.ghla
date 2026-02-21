@@ -5,6 +5,7 @@ bits 64
 feature enable shorten_syscalls
 feature enable syscall_constants
 feature enable new_regs_instructions
+feature enable append_str_length
 
 section .data
     filename db "file.txt", 0
@@ -19,9 +20,9 @@ export _start:
     syscall SYSCALL_OPEN, filename, 2 | 64, 420
     mov rdi, rax  
 
-    ; write(fd, "x", 1)
+    ; write(fd, "x", strlen("x"))
     mov rsi, char
-    mov rdx, 1
+    mov rdx, char_len
     syscall SYSCALL_WRITE, rdi, rsi, rdx
 
     ; close(fd)
