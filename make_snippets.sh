@@ -27,5 +27,3 @@ for file in "$SRC_DIR"/*.asm; do
     echo ";" >> "$OUT_FILE"
     echo "" >> "$OUT_FILE"
 done
-
-echo "Generated $OUT_FILE"
